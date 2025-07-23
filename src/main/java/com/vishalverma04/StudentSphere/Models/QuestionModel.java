@@ -3,6 +3,7 @@ package com.vishalverma04.StudentSphere.Models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,8 +22,8 @@ public class QuestionModel {
     private List<String> tags;          // e.g., ["array", "sliding-window"]
     private List<String> topics;        // e.g., ["Data Structures", "Algorithms"]
 
-    private LocalDateTime askedDate;    // When asked in interview
-    private LocalDateTime uploadedAt;   // Upload time
+    private LocalDate askedDate;    // When asked in interview
+    private LocalDate uploadedAt;   // Upload time
     private String uploadedBy;          // User ID or email
 
     private int likes;
@@ -96,19 +97,19 @@ public class QuestionModel {
         this.topics = topics;
     }
 
-    public LocalDateTime getAskedDate() {
+    public LocalDate getAskedDate() {
         return askedDate;
     }
 
-    public void setAskedDate(LocalDateTime askedDate) {
+    public void setAskedDate(LocalDate askedDate) {
         this.askedDate = askedDate;
     }
 
-    public LocalDateTime getUploadedAt() {
+    public LocalDate getUploadedAt() {
         return uploadedAt;
     }
 
-    public void setUploadedAt(LocalDateTime uploadedAt) {
+    public void setUploadedAt(LocalDate uploadedAt) {
         this.uploadedAt = uploadedAt;
     }
 

@@ -5,6 +5,7 @@ import com.vishalverma04.StudentSphere.Models.QuestionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -30,4 +31,7 @@ public interface QuestionService {
     QuestionModel unlikeQuestion(String id);
     QuestionModel addComment(String id, Comment comment);
     QuestionModel markVerified(String id, boolean verified);
+
+    List<QuestionModel> filterQuestions(LocalDate fromDate,LocalDate toDate,String company,String difficult,List<String> topics,String questionType);
+
 }

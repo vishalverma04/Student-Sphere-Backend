@@ -7,8 +7,12 @@ import com.vishalverma04.StudentSphere.Service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +26,7 @@ public class QuestionServiceImplement implements QuestionService {
     @Override
     public QuestionModel createQuestion(QuestionModel question) {
         if (question.getUploadedAt() == null) {
-            question.setUploadedAt(LocalDateTime.now());
+            question.setUploadedAt(LocalDate.now());
         }
         if (question.getTags() == null) question.setTags(new ArrayList<>());
         if (question.getTopics() == null) question.setTopics(new ArrayList<>());
@@ -144,4 +148,43 @@ public class QuestionServiceImplement implements QuestionService {
         q.setVerified(verified);
         return questionRepository.save(q);
     }
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Override
+    public List<QuestionModel> filterQuestions(LocalDate fromDate, LocalDate toDate, String company, String difficultyLevel, List<String> topics, String questionType) {
+
+        List<Criteria> criteriaList = new ArrayList<>();
+
+        if (company != null && !company.isBlank()) {
+            criteriaList.add(Criteria.where("company").regex(company, "i"));
+        }
+
+        if(questionType!=null && !questionType.isBlank()){
+            criteriaList.add(Criteria.where("questionType").is(questionType));
+        }
+
+        if (difficultyLevel != null && !difficultyLevel.isBlank()) {
+            criteriaList.add(Criteria.where("difficultyLevel").is(difficultyLevel));
+        }
+
+        if (topics != null && !topics.isEmpty()) {
+            criteriaList.add(Criteria.where("topics").all(topics)); // ensures all topics match
+        }
+
+        if (fromDate != null || toDate != null) {
+            Criteria dateCriteria = Criteria.where("askedDate");
+            if (fromDate != null) dateCriteria = dateCriteria.gte(fromDate);
+            if (toDate != null) dateCriteria = dateCriteria.lte(toDate);
+            criteriaList.add(dateCriteria);
+        }
+
+        Query query = new Query();
+        if (!criteriaList.isEmpty()) {
+            query.addCriteria(new Criteria().andOperator(criteriaList.toArray(new Criteria[0])));
+        }
+        return mongoTemplate.find(query, QuestionModel.class);
+    }
+
 }

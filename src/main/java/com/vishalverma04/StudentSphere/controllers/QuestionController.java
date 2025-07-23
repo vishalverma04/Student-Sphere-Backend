@@ -6,8 +6,11 @@ import com.vishalverma04.StudentSphere.Service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -129,4 +132,19 @@ public class QuestionController {
     public QuestionModel markVerified(@PathVariable String id, @RequestParam boolean verified) {
         return questionService.markVerified(id, verified);
     }
+    // In your QuestionController
+
+    @GetMapping("/filter")
+    public ResponseEntity<List<QuestionModel>> filterQuestions(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate,
+            @RequestParam(required = false) String company,
+            @RequestParam(required = false) String difficulty,
+            @RequestParam(required = false) List<String> topics,
+            @RequestParam(required = false) String questionType
+    ) {
+        List<QuestionModel> questions = questionService.filterQuestions(fromDate, toDate, company, difficulty, topics,questionType);
+        return ResponseEntity.ok(questions);
+    }
+
 }
